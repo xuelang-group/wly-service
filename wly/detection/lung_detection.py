@@ -21,10 +21,10 @@ class LungDetection(object):
         config1, nod_net, loss, get_pbb = res18.get_model()
         checkpoint = torch.load(model_path)
         nod_net.load_state_dict(checkpoint)
-        nod_net = DataParallel(nod_net).cuda()
-        nod_net.eval()
-        self.nod_net = nod_net
         self.get_pbb = get_pbb
+        self.nod_net = DataParallel(nod_net).cuda()
+        self.nod_net.eval()
+        del nod_net
 
     @func_set_timeout(40)
     def prediction(self, imgs, coord, nzhw, spacing, endbox, batch=1):
@@ -33,10 +33,12 @@ class LungDetection(object):
             splitlist.append(len(imgs))
 
         def _run(start, end):
-            input = Variable(imgs[start:end]).cuda()
-            inputcoord = Variable(coord[start:end]).cuda()
+            input = Variable(imgs[start:end], volatile=True).cuda()
+            inputcoord = Variable(coord[start:end], volatile=True).cuda()
             output = self.nod_net(input, inputcoord)
-            return output.data.cpu().numpy()
+            result =  output.data.cpu().numpy()
+            del input, inputcoord, output
+            return result
 
         outputlist = [_run(start, end) for start, end in zip(splitlist[:-1], splitlist[1:])]
         output = np.concatenate(outputlist, 0)

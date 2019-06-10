@@ -17,11 +17,12 @@ def lumTrans(img):
 
 class LungSegmentUnet(object):
     def __init__(self, model):
-        self.net = UNet(color_dim=3, num_classes=3)
+        net = UNet(color_dim=3, num_classes=3)
         checkpoint = torch.load(model)
-        self.net.load_state_dict(checkpoint['state_dir'])
-        self.net = DataParallel(self.net).cuda()
+        net.load_state_dict(checkpoint['state_dir'])
+        self.net = DataParallel(net).cuda()
         self.net.eval()
+        del net
 
     @func_set_timeout(20)
     def cut(self, data, b_s=64):
@@ -69,6 +70,8 @@ class LungSegmentUnet(object):
             output[output > 0] += 2
             output = output.view(batch_size, p_h, p_w)
             outputlist.append(output.cpu().numpy())
+            del input, output
+
         output = np.concatenate(outputlist, axis=0).astype(np.uint8)
         if pad_w > 0:
             output = output[:, :, pad_w:]

@@ -22,13 +22,13 @@ def prediction(net, get_pbb, img, split_comber, result_dict, cuda_id):
 
     for i in range(len(splitlist) - 1):
         # img: torch.Size([1, 1, 208, 208, 208])
-        input = Variable(imgs[splitlist[i]:splitlist[i + 1]]).cuda(cuda_id)
-        inputcoord = Variable(coord[splitlist[i]:splitlist[i + 1]]).cuda(cuda_id)
+        input = Variable(imgs[splitlist[i]:splitlist[i + 1]], volatile=True).cuda(cuda_id)
+        inputcoord = Variable(coord[splitlist[i]:splitlist[i + 1]], volatile=True).cuda(cuda_id)
         output = net(input, inputcoord)
         # torch.cuda.empty_cache()
         # print('out_put:',output.data.cpu().numpy().shape)
         outputlist.append(output.data.cpu().numpy())
-        del output
+        del input, inputcoord, output
 
     output = np.concatenate(outputlist, 0)
 

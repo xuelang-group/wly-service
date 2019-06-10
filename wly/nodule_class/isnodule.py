@@ -26,9 +26,9 @@ class LungIsncls(object):
     def __init__(self, model_path):
         isn_net = Net()
         isn_net.load_state_dict(torch.load(model_path))
-        isn_net = DataParallel(isn_net).cuda()
-        isn_net.eval()
-        self.isn_net = isn_net
+        self.isn_net = DataParallel(isn_net).cuda()
+        self.isn_net.eval()
+        del isn_net
 
     @func_set_timeout(20)
     def nodule_cls(self, nodule_df, case, spacing):
@@ -45,11 +45,12 @@ class LungIsncls(object):
         candidates_list = []
         for i, (data, cands) in enumerate(data_loader):
             # torchvision.utils.save_image(data[:, :, :, :, 10], 'batch_%d.png' % i)
-            data = Variable(data).cuda()
+            data = Variable(data,  volatile=True).cuda()
             output = self.isn_net(data)
             probs = softmax(output).data[:, 1].cpu().numpy()
             probabilities_list.append(probs)
             candidates_list.append(cands)
+            del data, output
 
         probabilities = np.concatenate(probabilities_list)
         candidates = pd.concat(candidates_list)

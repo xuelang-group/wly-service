@@ -32,10 +32,7 @@ class DownloadStream(Stream):
         ser = series[windC.index(True)]
         dicoms_path = path.mkdirs(os.path.join(data_path, "dicoms"))
 
-        # logger.info("Downloading: {}".format(",".join(ser['files'])))
-        print("--------------------------")
-        print(ser["files"])
-        print("--------------------------")
+        logger.info("Downloading: {} files".format(len(ser['files']))
         download = runtime.retry(stop_max_attempt_number=3)(functools.partial(downloading, path=dicoms_path))
         asyncio.map(download, ser['files'], thread=True, pbar=True, workers=len(ser['files']))
 
