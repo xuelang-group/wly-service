@@ -48,4 +48,4 @@ class LungDetection(object):
         pbb = nms(pbb, 0.05)
         nodule_df = pbb_to_df(pbb, spacing, endbox)
         nodule_df = nodule_df[nodule_df.probability > 0.25]
-        return nodule_df
+        return nodule_df, pbb
