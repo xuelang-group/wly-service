@@ -1,0 +1,15 @@
+{
+    "sync-rsync.executableShell": "/bin/bash",
+    "sync-rsync.onSaveIndividual": false,
+    "sync-rsync.exclude": [
+        ".vscode",
+    ],
+    "sync-rsync.sites": [
+        {
+            "remotePath":"root@221.13.203.142:/home/majik/wly/",
+            "shell":"ssh -p 22"
+        },
+    ],
+    "sync-rsync.delete": true,
+    "python.pythonPath": "/Users/majik/.local/share/virtualenvs/wly-Pz42yR0Q/bin/python",
+}
