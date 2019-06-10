@@ -11,6 +11,7 @@ from suanpan.stream import Handler as h
 from suanpan.stream import Stream
 from suanpan.stream.arguments import Bool, Folder, Int, Json, Npy
 from suanpan.utils import convert, image, json, npy, pickle
+from sunapan.log import logger
 from torch.backends import cudnn
 from wly.work_gpu import LungDetection, LungIsncls, lobe_locate_gmm
 
