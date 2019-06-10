@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function
 import os
 
 import cv2
+import numpy as np
 import torch
 from func_timeout import FunctionTimedOut
 from suanpan import asyncio
@@ -30,11 +31,6 @@ def rectangle(img, box, color=RED, width=1, *arg, **kwargs):
 
 def pickWithPbb(img, pbb, maskFunc=rectangle, *arg, **kwargs):
     image3D = convert.to3D(img)
-    # # Probabilities threshold
-    # pbb = pbb[pbb[:, 0] > -1]
-    # # NMS : Non-max suppression
-    # # Remove overlapping boxes.
-    # pbb = nms(pbb, 0.05)
 
     def _mask(box):
         box = box.astype("int")[1:]
