@@ -34,26 +34,19 @@ def run():
         down_thread = DownThread(que_get, que_pre)
         down_thread.setDaemon(True)
         down_thread.start()
-    #
-    # cpu_thread_nums = 2
-    # for i in range(cpu_thread_nums):
-    #     cpu_thread = CpuThread(que_pre, que_det, i)
-    #     cpu_thread.setDaemon(True)
-    #     cpu_thread.start()
 
-
-    cpu_thread = CpuThread(que_pre, que_det)
-    cpu_thread.setDaemon(True)
-    cpu_thread.start()
-
+    cpu_thread_nums = 3
+    for i in range(cpu_thread_nums):
+        cpu_thread = CpuThread(que_pre, que_det)
+        cpu_thread.setDaemon(True)
+        cpu_thread.start()
 
     gpu_thread = GpuThread(que_det, que_ret)
     gpu_thread.setDaemon(True)
     gpu_thread.start()
 
-    pull_thread = PushThread(que_ret)
-    pull_thread.setDaemon(True)
-    pull_thread.start()
+    push_thread = PushThread(que_ret)
+    push_thread.setDaemon(True)
+    push_thread.start()
 
-    pull_thread.join()
-    # app.run()
+    push_thread.join()

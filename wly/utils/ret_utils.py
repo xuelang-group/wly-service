@@ -16,8 +16,11 @@ def error_info(error_code, result_dict):
         '201': 'Target detection is abnormal',
         '202': 'Abnormal data classification'
     }
-    msg = {'errorCode': error_code, 'errorMsg': error[str(error_code)]}
-    error_ret_info(json.dumps(msg), result_dict)
+    try:
+        msg = {'errorCode': error_code, 'errorMsg': error[str(error_code)]}
+        error_ret_info(json.dumps(msg), result_dict)
+    except Exception as e:
+        print("return info error: {}".format(e))
 
 
 def success_ret_info(result_dict):

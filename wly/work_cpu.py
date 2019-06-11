@@ -1,10 +1,13 @@
 import gc
+import os
+import shutil
 import threading
 import time
 from multiprocessing import Pool
 
 from func_timeout import FunctionTimedOut
 from torch.backends import cudnn
+
 from wly.detection import split_combine
 from wly.detection.data import data_loader
 from wly.detection.res18 import get_pbb
@@ -35,11 +38,13 @@ class CpuThread(threading.Thread):
         while True:
             if self.que_pre.qsize() > 0:
                 result_dict = self.que_pre.get()
+                data_path = result_dict["data_path"]
                 try:
                     t_s = time.time()
                     # res = self.pool.apply_async(cpu_preprocess_1, (result_dict,))
                     # case, spacing, instances = res.get()
-                    case, spacing, instances = read_dicom.load_dicom2(result_dict['data_path'])
+
+                    case, spacing, instances = read_dicom.load_dicom2(data_path)
                     print('load us :',time.time()-t_s)
                     # assert 40 < case.shape[0] < 80
                     prep_mask = self.lung_segm.cut(case, 30)
@@ -63,12 +68,15 @@ class CpuThread(threading.Thread):
                     print(time.ctime() + 'cpu process task us time: {}.{}'.format(time.time() - t_s,
                                                                                   result_dict['data_path']))
                     self.que_det.put(result_dict)
-                    gc.collect()
+                    # gc.collect()
                 except FunctionTimedOut:
                     print(time.ctime() + 'FUN TIMEOUT ')
                 except Exception as e:
                     print (e)
                     error_info(100, result_dict)
+                # finally:
+                #     if os.path.exists(data_path):
+                #         shutil.rmtree(data_path)
             else:
                 time.sleep(1)
 

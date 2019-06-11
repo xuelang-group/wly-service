@@ -47,15 +47,15 @@ class GpuThread(threading.Thread):
                     print(' GPU WORKER DOING  ')
                     result_dict = self.que_det.get(timeout=5)
                     t_s = time.time()
-                    nodule_df = self.lung_dete.prediction(result_dict['dete_imgs'], result_dict['dete_coord'],
+                    nodule_df, _ = self.lung_dete.prediction(result_dict['dete_imgs'], result_dict['dete_coord'],
                                                           result_dict['dete_nzhw'], result_dict['prep_spac'],
-                                                          result_dict['prep_ebox'])
+                                                          result_dict['prep_ebox'], batch=8)
                     preb = self.lung_isnc.nodule_cls(nodule_df, result_dict['prep_case'], result_dict['prep_spac'])
                     preb = self.lung_lobe(preb, result_dict['prep_case'], result_dict['prep_mask'],
                                           result_dict['prep_spac'])
                     result_dict['nodule_preb'] = preb
                     self.que_ret.put(result_dict, timeout=5)
-                    gc.collect()
+                    # gc.collect()
                     print(time.ctime() + 'GPU DOING US TIME:', time.time() - t_s)
                 else:
                     time.sleep(1)
