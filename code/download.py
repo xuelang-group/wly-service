@@ -24,7 +24,10 @@ class DownloadStream(Stream):
         data_file = os.path.join(data_path, "data.json")
 
         series = data['series']
+        for ser in series:
+            logger.debug(ser['windowCenter'])
         windC = [int(ser['windowCenter'].split('\\')[0]) < 0 for ser in series]
+        logger.debug(windC)
         if not sum(windC):
             logger.info("Nothing to download.")
             return
@@ -32,7 +35,7 @@ class DownloadStream(Stream):
         ser = series[windC.index(True)]
         dicoms_path = path.mkdirs(os.path.join(data_path, "dicoms"))
 
-        logger.info("Downloading: {} files".format(len(ser['files']))
+        logger.info("Downloading: {} files".format(len(ser['files'])))
         download = runtime.retry(stop_max_attempt_number=3)(functools.partial(downloading, path=dicoms_path))
         asyncio.map(download, ser['files'], thread=True, pbar=True, workers=len(ser['files']))
 

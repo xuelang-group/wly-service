@@ -1,14 +1,14 @@
 import queue
 import warnings
 
-from flask import Flask
+# from flask import Flask
 from wly.work_cpu import CpuThread
 from wly.work_gpu import GpuThread
 from wly.work_oth import DownThread, PullThread, PushThread
 
 warnings.filterwarnings('ignore')
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 
 # http://192.168.1.222:9595/api/gpu/next?modality=CT&st=5

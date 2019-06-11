@@ -34,8 +34,10 @@ def pickWithPbb(img, pbb, maskFunc=rectangle, *arg, **kwargs):
 
     def _mask(box):
         box = box.astype("int")[1:]
-        zindex, box = box[0], box[1:]
-        return addMask(image3D[zindex], box, maskFunc=rectangle, *arg, **kwargs)
+        xx, yy, zz, aa = box
+        box = [xx, yy, aa]
+        logger.error("image shape:{}".format(image3D.shape))
+        return addMask(image3D[zz], box, maskFunc=rectangle, *arg, **kwargs)
 
     return (_mask(box) for box in pbb)
 

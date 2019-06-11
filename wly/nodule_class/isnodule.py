@@ -45,12 +45,13 @@ class LungIsncls(object):
         candidates_list = []
         for i, (data, cands) in enumerate(data_loader):
             # torchvision.utils.save_image(data[:, :, :, :, 10], 'batch_%d.png' % i)
-            data = Variable(data,  volatile=True).cuda()
-            output = self.isn_net(data)
-            probs = softmax(output).data[:, 1].cpu().numpy()
-            probabilities_list.append(probs)
-            candidates_list.append(cands)
-            del data, output
+            with torch.no_grad():
+                data = Variable(data).cuda()
+                output = self.isn_net(data)
+                probs = softmax(output).data[:, 1].cpu().numpy()
+                probabilities_list.append(probs)
+                candidates_list.append(cands)
+                del data, output
 
         probabilities = np.concatenate(probabilities_list)
         candidates = pd.concat(candidates_list)

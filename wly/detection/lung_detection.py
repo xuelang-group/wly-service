@@ -33,12 +33,13 @@ class LungDetection(object):
             splitlist.append(len(imgs))
 
         def _run(start, end):
-            input = Variable(imgs[start:end], volatile=True).cuda()
-            inputcoord = Variable(coord[start:end], volatile=True).cuda()
-            output = self.nod_net(input, inputcoord)
-            result =  output.data.cpu().numpy()
-            del input, inputcoord, output
-            return result
+            with torch.no_grad():
+                input = Variable(imgs[start:end]).cuda()
+                inputcoord = Variable(coord[start:end]).cuda()
+                output = self.nod_net(input, inputcoord)
+                result =  output.data.cpu().numpy()
+                del input, inputcoord, output
+                return result
 
         outputlist = [_run(start, end) for start, end in zip(splitlist[:-1], splitlist[1:])]
         output = np.concatenate(outputlist, 0)
